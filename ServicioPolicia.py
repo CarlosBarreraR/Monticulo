@@ -8,7 +8,16 @@ class Persona:
 
     def __lt__(self, other):
         if self.gravedad == other.gravedad:
-            return self.edad < other.edad
+            if self.edad < 12 and other.edad >= 12:  
+                return True
+            elif self.edad >= 12 and other.edad < 12:
+                return False
+            elif self.edad > 65 and other.edad <= 65:
+                return True
+            elif self.edad <= 65 and other.edad > 65:
+                return False
+            else: 
+                return self.edad < other.edad
         return self.gravedad < other.gravedad
 
 class MonticuloBinario:
@@ -21,13 +30,19 @@ class MonticuloBinario:
       self.cola = self.cola + 1
       self.infiltArriba(self.cola)
 
-    def infiltArriba(self,i):
+    def infiltArriba(self, i):
         while i // 2 > 0:
-          if self.listaMonticulo[i] < self.listaMonticulo[i // 2]:
-             tmp = self.listaMonticulo[i // 2]
-             self.listaMonticulo[i // 2] = self.listaMonticulo[i]
-             self.listaMonticulo[i] = tmp
-          i = i // 2
+            if self.listaMonticulo[i].gravedad < self.listaMonticulo[i // 2].gravedad:
+                tmp = self.listaMonticulo[i // 2]
+                self.listaMonticulo[i // 2] = self.listaMonticulo[i]
+                self.listaMonticulo[i] = tmp
+            elif self.listaMonticulo[i].gravedad == self.listaMonticulo[i // 2].gravedad:
+            # Si las gravedades son iguales, compara las edades para determinar la prioridad
+                if self.listaMonticulo[i].edad < self.listaMonticulo[i // 2].edad:
+                    tmp = self.listaMonticulo[i // 2]
+                    self.listaMonticulo[i // 2] = self.listaMonticulo[i]
+                    self.listaMonticulo[i] = tmp
+            i = i // 2
 
     def eliminarMin(self):
         valorSacado = self.listaMonticulo[1]
@@ -61,12 +76,15 @@ class ServicioPolicial:
 
     def ingresar_llamada(self, llamada):
         self.cola.insertar(llamada)
+        posicion = self.cola.listaMonticulo.index(llamada)
+        print(f"{llamada.nombre} ha sido ingresado en la cola y será atendido en la posición {posicion}.")
 
     def pasar_siguiente(self):
         return self.cola.eliminarMin()
 
     def mostrar_cola(self):
-        return self.cola.cola
+        self.cola.listaMonticulo[1:]
+    
 
 servicio = ServicioPolicial()
 
@@ -83,10 +101,8 @@ while True:
         motivo = input("Ingrese el motivo de la llamada: ")
         gravedad = int(input("Ingrese la gravedad (1-5): "))
         llamada = Persona(nombre, edad, direccion, motivo, gravedad)
-        servicio.ingresar_llamada(llamada)
         cola = servicio.mostrar_cola()
-        if cola:
-            print(f"{llamada.nombre} será atendido en la posición {posicion}")
+        servicio.ingresar_llamada(llamada)
 
 
     elif opcion == 2:
@@ -103,4 +119,3 @@ while True:
                 print(f"\n{posicion}. {llamada.nombre}, {llamada.edad}, {llamada.direccion}, {llamada.motivo}, {llamada.gravedad}\n")
         else:
             print("La cola está vacía.")
-            

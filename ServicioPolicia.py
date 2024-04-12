@@ -37,7 +37,6 @@ class MonticuloBinario:
                 self.listaMonticulo[i // 2] = self.listaMonticulo[i]
                 self.listaMonticulo[i] = tmp
             elif self.listaMonticulo[i].gravedad == self.listaMonticulo[i // 2].gravedad:
-            # Si las gravedades son iguales, compara las edades para determinar la prioridad
                 if self.listaMonticulo[i].edad < self.listaMonticulo[i // 2].edad:
                     tmp = self.listaMonticulo[i // 2]
                     self.listaMonticulo[i // 2] = self.listaMonticulo[i]

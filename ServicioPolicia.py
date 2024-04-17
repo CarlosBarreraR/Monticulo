@@ -5,19 +5,19 @@ class Persona:
         self.direccion = direccion
         self.motivo = motivo
         self.gravedad = gravedad
+        self.prioridad = self.calcularPrio()
 
+    def calcularPrio(self):
+        if self.edad <= 12:  
+            return 1
+        elif self.edad >= 65:
+            return 2
+        else:
+            return 4
+    
     def __lt__(self, other):
         if self.gravedad == other.gravedad:
-            if self.edad < 12 and other.edad >= 12:  
-                return True
-            elif self.edad >= 12 and other.edad < 12:
-                return False
-            elif self.edad > 65 and other.edad <= 65:
-                return True
-            elif self.edad <= 65 and other.edad > 65:
-                return False
-            else: 
-                return self.edad < other.edad
+            return self.prioridad < other.prioridad
         return self.gravedad < other.gravedad
 
 class MonticuloBinario:
@@ -37,13 +37,21 @@ class MonticuloBinario:
                 self.listaMonticulo[i // 2] = self.listaMonticulo[i]
                 self.listaMonticulo[i] = tmp
             elif self.listaMonticulo[i].gravedad == self.listaMonticulo[i // 2].gravedad:
-                if self.listaMonticulo[i].edad < self.listaMonticulo[i // 2].edad:
+                if self.listaMonticulo[i].prioridad < self.listaMonticulo[i // 2].prioridad:
                     tmp = self.listaMonticulo[i // 2]
                     self.listaMonticulo[i // 2] = self.listaMonticulo[i]
                     self.listaMonticulo[i] = tmp
+                elif self.listaMonticulo[i].prioridad == self.listaMonticulo[i // 2].prioridad:
+                    # Ordenar por orden de llegada si la gravedad y la prioridad son iguales
+                    if self.listaMonticulo[i] < self.listaMonticulo[i // 2]:
+                        tmp = self.listaMonticulo[i // 2]
+                        self.listaMonticulo[i // 2] = self.listaMonticulo[i]
+                        self.listaMonticulo[i] = tmp
             i = i // 2
 
     def eliminarMin(self):
+        if self.cola == 0:
+            return None  # Devolver None si la lista está vacía
         valorSacado = self.listaMonticulo[1]
         self.listaMonticulo[1] = self.listaMonticulo[self.cola]
         self.cola = self.cola - 1
@@ -76,13 +84,13 @@ class ServicioPolicial:
     def ingresar_llamada(self, llamada):
         self.cola.insertar(llamada)
         posicion = self.cola.listaMonticulo.index(llamada)
-        print(f"{llamada.nombre} ha sido ingresado en la cola y será atendido en la posición {posicion}.")
+        print(f"\n{llamada.nombre} ha sido ingresado en la cola y será atendido en la posición {posicion}.\n")
 
     def pasar_siguiente(self):
         return self.cola.eliminarMin()
 
     def mostrar_cola(self):
-        self.cola.listaMonticulo[1:]
+        return self.cola.listaMonticulo[1:]
     
 
 servicio = ServicioPolicial()
@@ -106,10 +114,10 @@ while True:
 
     elif opcion == 2:
         siguiente = servicio.pasar_siguiente()
-        if siguiente:
-            print(f"La siguiente solicitud es de {siguiente.nombre}")
+        if siguiente is not None:
+            print(f"\nLa siguiente solicitud es de {siguiente.nombre}\n")
         else:
-            print("No hay más solicitudes pendientes.")
+            print("\nNo hay más solicitudes pendientes.\n")
 
     elif opcion == 3:
         cola = servicio.mostrar_cola()
@@ -117,4 +125,4 @@ while True:
             for posicion, llamada in enumerate(cola, start=1):
                 print(f"\n{posicion}. {llamada.nombre}, {llamada.edad}, {llamada.direccion}, {llamada.motivo}, {llamada.gravedad}\n")
         else:
-            print("La cola está vacía.")
+            print("\nLa cola está vacía.\n")
